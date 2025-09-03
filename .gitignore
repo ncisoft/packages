@@ -38,4 +38,5 @@ config.log
 
 # Misc
 .phony_target
+ltmain.sh
 contrib/
