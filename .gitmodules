@@ -1,0 +1,9 @@
+[submodule "contrib/buffer"]
+	path = contrib/buffer
+	url = https://github.com/shiffthq/buffer.git
+[submodule "contrib/libcork"]
+	path = contrib/libcork
+	url = https://github.com/dcreager/libcork.git
+[submodule "contrib/check"]
+	path = contrib/check
+	url = https://github.com/libcheck/check.git
