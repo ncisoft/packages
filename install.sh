@@ -17,6 +17,7 @@ cwd=$(pwd)
 check_done=${cwd}/contrib/build/.check.done
 buffer_done=${cwd}/contrib/build/.buffer.done
 cork_done=${cwd}/contrib/build/.cork.done
+fmt_done=${cwd}/contrib/build/.fmt.done
 
 build_autogen()
 {
@@ -39,6 +40,28 @@ build_autogen()
 	fi
 }
 
+build_cmake()
+{
+	dir=$1
+	done_file=$2
+
+	if test -f $done_file; then
+		echo_hl "${dir} has been installed"
+	else
+
+		true &&                                        \
+			echo_hl "build ${dir}" &&                  \
+			mkdir $dir/build &&                        \
+			cd $dir/build &&                           \
+			cmake -DCMAKE_INSTALL_PREFIX=$PREFIX .. && \
+			make -j$(nproc) &&                         \
+			sudo make install &&                       \
+			cd $cwd &&                                 \
+			echo_hl "build ${done_file}" &&            \
+			touch $done_file
+	fi
+}
+
 if ! test -f ${check_done}; then
 	true &&                                      \
 		rm -rf contrib/check/build &&            \
@@ -53,3 +76,4 @@ fi
 
 build_autogen ./contrib/buffer ${buffer_done}
 build_autogen ./contrib/libcork ${cork_done}
+build_cmake ./contrib/fmt ${fmt_done}
