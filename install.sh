@@ -21,11 +21,22 @@ cork_done=${cwd}/contrib/build/.cork.done
 build_autogen()
 {
 	dir=$1
-	cd $dir &&                          \
-		./autogen.sh &&                 \
-		./configure --prefix=$PREFIX && \
-		make -j$(nproc) &&              \
-		sudo make install
+	done_file=$2
+	if test -f $done_file; then
+		echo_hl "${dir} has been installed"
+	else
+
+		true &&                                      \
+			echo_hl "build ${dir}" &&                \
+			cd $dir &&                               \
+			./autogen.sh &&                          \
+			./configure --prefix=$PREFIX &&          \
+			make -j$(nproc) &&                       \
+			sudo make install &&                     \
+			cd $cwd &&                               \
+			echo_hl "build ${done_file}" && \
+			touch $done_file
+	fi
 }
 
 if ! test -f ${check_done}; then
@@ -40,20 +51,5 @@ if ! test -f ${check_done}; then
 		touch ${check_done}
 fi
 
-if ! test -f ${buffer_done}; then
-	true &&                                        \
-		echo_hl "build buffer" &&                  \
-		build_autogen contrib/buffer &&            \
-		cd $cwd &&                                 \
-		echo "build buffer done ${buffer_done}" && \
-		touch ${buffer_done}
-fi
-
-if ! test -f ${cork_done}; then
-	true &&                                         \
-		echo_hl "build libcork" &&                  \
-		build_autogen contrib/libcork &&            \
-		cd $cwd &&                                  \
-		echo_hl "build buffer done ${cork_done}" && \
-		touch ${cork_done}
-fi
+build_autogen ./contrib/buffer ${buffer_done}
+build_autogen ./contrib/libcork ${cork_done}
